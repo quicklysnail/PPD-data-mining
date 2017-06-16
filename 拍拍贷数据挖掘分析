@@ -1,0 +1,627 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+#import sys
+#reload(sys)
+#sys.setdefaultencoding('utf-8')
+
+train_master = pd.read_csv('Desktop/kaggle example/ppd_competition_data/first round train data/PPD_Training_Master_GBK_3_1_Training_Set.csv',encoding='gbk')
+train_userupdateinfo = pd.read_csv('Desktop/kaggle example/ppd_competition_data/first round train data/PPD_Userupdate_Info_3_1_Training_Set.csv',encoding='gbk')
+train_loginfo = pd.read_csv('Desktop/kaggle example/ppd_competition_data/first round train data/PPD_LogInfo_3_1_Training_Set.csv',encoding='gbk')
+
+train_master.head() ## 借款人的一些信息
+train_master.shape
+train_userupdateinfo.head(100)   ###借款成交时间 , 修改内容 ,修改时间
+train_userupdateinfo.shape
+train_userupdateinfo.isnull().sum().sort_values(ascending=False).head(10)
+train_loginfo.head(20) ##借款成交时间 ,操作代码 ,操作类别 ,登陆时间
+train_loginfo.shape
+train_loginfo.isnull().sum().sort_values(ascending=False).head(10)
+
+## 用户登录信息和用户更新信息没有缺失值，不用处理
+list(train_master.columns)
+n_null_rate = train_master.isnull().sum().sort_values(ascending=False)/30000
+n_null_rate.head(20)
+## 去掉缺失比例接近百分之百的字段
+train_master.drop(['WeblogInfo_1' ,'WeblogInfo_3'],axis=1,inplace=True)
+## 处理UserInfo_12缺失
+train_master['UserInfo_12'].unique()
+#fig = plt.figure()
+#fig.set(alpha=0.2)
+target_UserInfo_12_not = train_master.target[train_master.UserInfo_12.isnull()].value_counts()
+target_UserInfo_12_ = train_master.target[train_master.UserInfo_12.notnull()].value_counts()
+df_UserInfo_12 = pd.DataFrame({'no_have':target_UserInfo_12_not,'have':target_UserInfo_12_})
+df_UserInfo_12
+df_UserInfo_12.plot(kind='bar', stacked=True)
+plt.title(u'有无这个特征对结果的影响')
+plt.xlabel(u'有无')
+plt.ylabel(u'违约情况')
+plt.show()
+
+#target_0 = train_master.UserInfo_12[train_master.target ==0].value_counts()
+#target_1 = train_master.UserInfo_12[train_master.target ==1].value_counts()
+#dfUserInfo_12 = pd.DataFrame({u'0':target_0 ,u'1':target_1})
+#dfUserInfo_12.head()
+
+train_master.loc[(train_master.UserInfo_12.isnull() , 'UserInfo_12')] = 2.0
+#train_master['UserInfo_11'].fillna(2.0)
+#train_master['UserInfo_12'] =train_master['UserInfo_12'].astype(np.int32)
+train_master['UserInfo_12'].dtypes
+train_master['UserInfo_12'].unique()
+
+## 处理UserInfo_11缺失
+train_master['UserInfo_11'].unique()
+#fig = plt.figure()
+#fig.set(alpha=0.2)
+target_UserInfo_11_not = train_master.target[train_master.UserInfo_11.isnull()].value_counts()
+target_UserInfo_11_ = train_master.target[train_master.UserInfo_11.notnull()].value_counts()
+df_UserInfo_11 = pd.DataFrame({'no_have':target_UserInfo_11_not,'have':target_UserInfo_11_})
+df_UserInfo_11
+df_UserInfo_11.plot(kind='bar', stacked=True)
+plt.title(u'有无这个特征对结果的影响')
+plt.xlabel(u'有无')
+plt.ylabel(u'违约情况')
+plt.show()
+
+#train_master['UserInfo_11'] =train_master['UserInfo_11'].astype(str)
+train_master.loc[(train_master.UserInfo_11.isnull() , 'UserInfo_11')] = 2.0
+train_master['UserInfo_11'].unique()
+
+## 处理UserInfo_13缺失
+train_master['UserInfo_13'].unique()
+#fig = plt.figure()
+#fig.set(alpha=0.2)
+target_UserInfo_13_not = train_master.target[train_master.UserInfo_13.isnull()].value_counts()
+target_UserInfo_13_ = train_master.target[train_master.UserInfo_13.notnull()].value_counts()
+df_UserInfo_13 = pd.DataFrame({'no_have':target_UserInfo_13_not,'have':target_UserInfo_13_})
+df_UserInfo_13
+df_UserInfo_13.plot(kind='bar', stacked=True)
+plt.title(u'有无这个特征对结果的影响')
+plt.xlabel(u'有无')
+plt.ylabel(u'违约情况')
+plt.show()
+
+#train_master['UserInfo_13'] =train_master['UserInfo_13'].astype(str)
+train_master.loc[(train_master.UserInfo_13.isnull() , 'UserInfo_13')] = 2.0
+train_master['UserInfo_13'].unique()
+
+## 处理WeblogInfo_20 缺失
+train_master['WeblogInfo_20'].unique()
+#fig = plt.figure()
+#fig.set(alpha=0.2)
+target_WeblogInfo_20_not = train_master.target[train_master.WeblogInfo_20.isnull()].value_counts()
+target_WeblogInfo_20_ = train_master.target[train_master.WeblogInfo_20.notnull()].value_counts()
+df_WeblogInfo_20 = pd.DataFrame({'no_have':target_WeblogInfo_20_not,'have':target_WeblogInfo_20_})
+df_WeblogInfo_20
+df_WeblogInfo_20.plot(kind='bar', stacked=True)
+plt.title(u'有无这个特征对结果的影响')
+plt.xlabel(u'有无')
+plt.ylabel(u'违约情况')
+plt.show()
+
+#train_master['WeblogInfo_20'] =train_master['WeblogInfo_20'].astype(str)
+train_master.loc[(train_master.WeblogInfo_20.isnull() , 'WeblogInfo_20')] = u'不详'
+train_master['WeblogInfo_20'].unique()
+
+## 处理WeblogInfo_19 缺失
+train_master['WeblogInfo_19'].unique()
+#fig = plt.figure()
+#fig.set(alpha=0.2)
+target_WeblogInfo_19_not = train_master.target[train_master.WeblogInfo_19.isnull()].value_counts()
+target_WeblogInfo_19_ = train_master.target[train_master.WeblogInfo_19.notnull()].value_counts()
+df_WeblogInfo_19 = pd.DataFrame({'no_have':target_WeblogInfo_19_not,'have':target_WeblogInfo_19_})
+df_WeblogInfo_19
+
+#df_WeblogInfo_19.plot(kind='bar', stacked=True)
+#plt.title(u'有无这个特征对结果的影响')
+#plt.xlabel(u'有无')
+#plt.ylabel(u'违约情况')
+#plt.show()
+
+#train_master['WeblogInfo_19'] =train_master['WeblogInfo_19'].astype(str)
+train_master.loc[(train_master.WeblogInfo_19.isnull() , 'WeblogInfo_19')] = u'不详'
+train_master['WeblogInfo_19'].unique()
+
+## 处理WeblogInfo_21 缺失
+train_master['WeblogInfo_21'].unique()
+#fig = plt.figure()
+#fig.set(alpha=0.2)
+target_WeblogInfo_21_not = train_master.target[train_master.WeblogInfo_21.isnull()].value_counts()
+target_WeblogInfo_21_ = train_master.target[train_master.WeblogInfo_21.notnull()].value_counts()
+df_WeblogInfo_21 = pd.DataFrame({'no_have':target_WeblogInfo_21_not,'have':target_WeblogInfo_21_})
+df_WeblogInfo_21
+
+df_WeblogInfo_21.plot(kind='bar', stacked=True)
+plt.title(u'有无这个特征对结果的影响')
+plt.xlabel(u'有无')
+plt.ylabel(u'违约情况')
+plt.show()
+
+#train_master['WeblogInfo_21'] =train_master['WeblogInfo_21'].astype(str)
+train_master.loc[(train_master.WeblogInfo_21.isnull() , 'WeblogInfo_21')] = '0'
+train_master['WeblogInfo_21'].unique()
+
+## 其余缺失值很少的就用均值或众数填充
+len(train_master['UserInfo_2'].value_counts()) ## 城市地理位置
+len(train_master['UserInfo_4'].value_counts())## 城市地理位置
+len(train_master['UserInfo_8'].value_counts())## 城市地理位置
+len(train_master['UserInfo_9'].unique())## 城市地理位置
+len(train_master['UserInfo_20'].value_counts())## 城市地理位置
+len(train_master['UserInfo_7'].unique())## 省份地理位置
+len(train_master['UserInfo_19'].unique())## 省份地理位置
+train_master.loc[(train_master.UserInfo_2.isnull() , 'UserInfo_2')] = '0'
+train_master.loc[(train_master.UserInfo_4.isnull() , 'UserInfo_4')] = '0'
+train_master.loc[(train_master.UserInfo_8.isnull() , 'UserInfo_8')] = '0'
+train_master.loc[(train_master.UserInfo_9.isnull() , 'UserInfo_9')] = '0'
+train_master.loc[(train_master.UserInfo_20.isnull() , 'UserInfo_20')] = '0'
+train_master.loc[(train_master.UserInfo_7.isnull() , 'UserInfo_7')] = '0'
+train_master.loc[(train_master.UserInfo_19.isnull() , 'UserInfo_19')] = '0'
+
+categoric_cols = ['UserInfo_1' ,'UserInfo_2' ,'UserInfo_3' ,'UserInfo_4' , 'UserInfo_5' ,'UserInfo_6','UserInfo_7','UserInfo_8','UserInfo_9','UserInfo_11','UserInfo_12','UserInfo_13','UserInfo_14','UserInfo_15','UserInfo_16','UserInfo_17','UserInfo_19','UserInfo_20','UserInfo_21','UserInfo_22','UserInfo_23','UserInfo_24','Education_Info1','Education_Info2','Education_Info3','Education_Info4','Education_Info5','Education_Info6','Education_Info7','Education_Info8','WeblogInfo_19','WeblogInfo_20','WeblogInfo_21','SocialNetwork_1','SocialNetwork_2','SocialNetwork_7','SocialNetwork_12']
+for col in categoric_cols:
+    mode_cols = train_master[col].mode()[0]
+    train_master.loc[(train_master[col].isnull() , col)] = mode_cols 
+    
+ numeric_cols = []
+for col in train_master.columns:
+    if col not in categoric_cols and col !=u'Idx' and col !=u'target' and col !='ListingInfo':
+        mean_cols = train_master[col].mean()
+        train_master.loc[(train_master[col].isnull() , col)] = mean_cols   
+  
+y_train = train_master['target'].as_matrix()
+
+## 剔除标准差几乎为零的特征项
+feature_std = train_master.std().sort_values(ascending=True)
+feature_std.head(20)
+train_master.drop(['WeblogInfo_10' ,'WeblogInfo_49','WeblogInfo_44','WeblogInfo_41','WeblogInfo_46','WeblogInfo_55','WeblogInfo_43','WeblogInfo_47','WeblogInfo_52','SocialNetwork_11','WeblogInfo_58','WeblogInfo_40','WeblogInfo_32','WeblogInfo_31','WeblogInfo_23'],axis=1,inplace=True)
+train_master['Idx'] =train_master['Idx'].astype(np.int32)
+
+for i in range(25):
+    name = 'UserInfo_'+str(i)
+    try:
+        print(train_master[name].head())
+    except:
+        pass
+        
+train_master['UserInfo_8'].head(20)
+import re
+## 去掉空格
+train_master['UserInfo_9'] = train_master['UserInfo_2'].apply(lambda x: x.strip())
+## 去掉大小写
+train_userupdateinfo['UserupdateInfo1'] =train_userupdateinfo['UserupdateInfo1'].apply(lambda x:x.lower())
+## 将UserInfo_8中城市名归一化
+def encodingstr(s):
+    regex = re.compile(ur'.+市')
+    if regex.search(s):
+        s = s[:-1]
+        return s
+    else:
+        return s
+train_master['UserInfo_8'] =train_master['UserInfo_8'].apply(lambda x: encodingstr(x))
+
+train_userupdateinfo.to_csv('Desktop/kaggle example/ppd_competition_data/first round train data/train_userupdateinfo.csv',index=False,encoding='utf-8')
+
+## UserInfo_2处理
+dummies_UserInfo_2 = pd.get_dummies(train_master['UserInfo_2'] , prefix='UserInfo_2')
+dummies_UserInfo_2.head()
+dummies_UserInfo_2.shape
+import pandas as pd
+import numpy as np
+import xgboost as xgb
+from xgboost.sklearn import XGBClassifier
+from sklearn.grid_search import GridSearchCV
+from sklearn import cross_validation , metrics
+import matplotlib.pylab as plt
+%matplotlib inline
+from matplotlib.pylab import rcParams
+rcParams['figure.figsize'] = 12, 4
+
+def modelfit(alg, dtrain,y_train, dtest=None ,useTrainCV=True, cv_folds=5, early_stopping_rounds=50):
+
+    if useTrainCV:
+        xgb_param = alg.get_xgb_params()
+        xgtrain = xgb.DMatrix(dtrain.as_matrix()[: ,:], label=y_train)
+        #xgtest = xgb.DMatrix(dtest.as_matrix()[: , :])
+        cvresult = xgb.cv(xgb_param, xgtrain, num_boost_round=alg.get_params()['n_estimators'], nfold=cv_folds ,early_stopping_rounds=early_stopping_rounds)
+        alg.set_params(n_estimators=cvresult.shape[0])
+    
+    #建模
+    alg.fit(dtrain.as_matrix()[: ,:], y_train ,eval_metric='auc')
+        
+    #对训练集预测
+    dtrain_predictions = alg.predict(dtrain.as_matrix()[: ,:])
+    dtrain_predprob = alg.predict_proba(dtrain.as_matrix()[: ,:])[:,1]
+        
+    #输出模型的一些结果
+    #print(dtrain_predictions)
+    #print(alg.predict_proba(dtrain.as_matrix()[: ,1:]))
+    print(cvresult.shape[0])
+    print "\n关于现在这个模型"
+    print "准确率 : %.4g" % metrics.accuracy_score(y_train, dtrain_predictions)
+    print "AUC 得分 (训练集): %f" % metrics.roc_auc_score(y_train, dtrain_predprob)
+    
+                
+    feat_imp = pd.Series(alg.booster().get_fscore()).sort_values(ascending=False)
+    print(feat_imp.head(25))
+    print(feat_imp.shape)
+    feat_imp.plot(kind='bar', title='Feature Importances')
+    plt.ylabel('Feature Importance Score')
+    
+xgb1 = XGBClassifier(
+            learning_rate=0.1,
+            n_estimators =1000,
+            max_depth=5,
+            min_child_weight =1,
+            gamma = 0,
+            subsample=0.8,
+            colsample_bytree = 0.8,
+            objective ='binary:logistic' ,
+            nthread=4,
+            scale_pos_weight=1,
+            seed = 27
+            )
+
+modelfit(xgb1 ,dummies_UserInfo_2  ,y_train)
+### 按城市等级合并（重要度排序效果不理想）
+first_city = [u'北京',u'上海',u'广州' ,u'深圳']
+new_first_city = [u'成都' ,u'杭州',u'武汉',u'重庆' ,u'南京',u'天津',u'苏州',u'西安' ,u'长沙',u'沈阳',u'青岛',u'郑州',u'大连' ,u'东莞',u'宁波']
+second_city = [u'厦门' ,u'福州',u'无锡',u'合肥' ,u'昆明',u'哈尔滨',u'佛上',u'长春' ,u'温州',u'石家庄',u'南宁',u'常州',u'泉州' ,u'南昌',u'贵阳',u'太原' ,u'烟台',u'嘉兴',u'南通' ,u'金华',u'珠海',u'惠州',u'徐州' ,u'海口',u'乌鲁木齐',u'绍兴',u'中山',u'台州' ,u'兰州']
+third_city = [u'潍坊' ,u'保定',u'镇江',u'扬州' ,u'桂林',u'唐山',u'三亚',u'湖州' ,u'呼和浩特',u'廊坊',u'洛阳',u'威海',u'盐城' ,u'临沂',u'江门',u'汕头' ,u'泰州',u'漳州',u'邯郸' ,u'济宁',u'芜湖',u'淄博',u'银川' ,u'柳州',u'绵阳',u'湛江',u'鞍山',u'赣州',u'大庆',u'宜昌' ,u'包头',u'咸阳',u'秦皇岛' ,u'株洲',u'莆田',u'吉林',u'淮安' ,u'肇庆',u'宁德',u'衡阳',u'南平',u'连云港' ,u'丹东',u'丽江',u'揭阳' ,u'延边朝鲜族自治州',u'舟山',u'九江' ,u'龙岩',u'沧州',u'抚顺',u'襄阳' ,u'上饶',u'营口',u'三明',u'蚌埠',u'丽水' ,u'岳阳',u'清远',u'荆州',u'泰安',u'衢州',u'盘锦' ,u'东营',u'南阳',u'马鞍山',u'南充' ,u'西宁',u'孝感' ,u'齐齐哈尔']
+
+def citycombine(s):
+    if s in first_city:
+        return u'新一线'
+    if s in new_first_city:
+        return u'一线'
+    if s in second_city:
+        return u'二线'
+    if s in third_city:
+        return u'三线'
+    if s==u'0':
+        return u'未知'
+    if s==u'不详':
+        return u'未知'
+    else:
+        return u'其他'
+        
+train_master['UserInfo_2'] =train_master['UserInfo_2'].apply(lambda x: citycombine(x))
+len(train_master['UserInfo_2'].unique())
+
+## UserInfo_4处理
+dummies_UserInfo_4 = pd.get_dummies(train_master['UserInfo_4'] , prefix='UserInfo_4')
+dummies_UserInfo_4.head()
+modelfit(xgb1 ,dummies_UserInfo_4  ,y_train)
+train_master['UserInfo_4'] =train_master['UserInfo_4'].apply(lambda x: citycombine(x))
+len(train_master['UserInfo_4'].unique())
+
+## UserInfo_7处理
+## 省份地理信息处理
+grouped = train_master[train_master.target =='1']['target'].groupby(train_master['UserInfo_7']).value_counts()
+grouped.sort_values(ascending=False)
+
+def province_encode(s):
+    if s == u'不详':
+        return '0'
+    if s == u'广东':
+        return '1'
+    if s == u'山东':
+        return '2'
+    if s == u'江苏':
+        return '3'
+    if s == u'浙江':
+        return '4'
+    if s == u'四川':
+        return '5'
+    if s == u'福建':
+        return '6'
+    if s == u'湖南':
+        return '7'
+    else:
+        return '8'
+        
+train_master['UserInfo_7'] =train_master['UserInfo_7'].apply(lambda x: province_encode(x))
+len(train_master['UserInfo_7'].unique())    
+
+## UserInfo_8处理
+dummies_UserInfo_8 = pd.get_dummies(train_master['UserInfo_8'] , prefix='UserInfo_8')
+dummies_UserInfo_8.head()
+modelfit(xgb1 ,dummies_UserInfo_8  ,y_train)
+train_master['UserInfo_8'] =train_master['UserInfo_8'].apply(lambda x: citycombine(x))
+len(train_master['UserInfo_8'].unique())
+
+## UserInfo_9处理
+dummies_UserInfo_9 = pd.get_dummies(train_master['UserInfo_9'] , prefix='UserInfo_9')
+dummies_UserInfo_9.head()
+modelfit(xgb1 ,dummies_UserInfo_9  ,y_train)
+train_master['UserInfo_9'] =train_master['UserInfo_9'].apply(lambda x: citycombine(x))
+len(train_master['UserInfo_9'].unique())
+
+## UserInfo_20处理
+dummies_UserInfo_20= pd.get_dummies(train_master['UserInfo_20'] , prefix='UserInfo_20')
+dummies_UserInfo_20.head()
+modelfit(xgb1 ,dummies_UserInfo_20  ,y_train)
+train_master['UserInfo_20'] =train_master['UserInfo_20'].apply(lambda x: citycombine(x))
+len(train_master['UserInfo_20'].unique())
+
+## UserInfo_19处理
+## 省份地理信息处理
+grouped = train_master[train_master.target =='1']['target'].groupby(train_master['UserInfo_19']).value_counts()
+grouped.sort_values(ascending=False)
+def province_encode_(s):
+    if s == u'山东省':
+        return '0'
+    if s == u'广东省':
+        return '1'
+    if s == u'四川省':
+        return '2'
+    if s == u'湖南省':
+        return '3'
+    if s == u'江苏省':
+        return '4'
+    if s == u'湖北省':
+        return '5'
+    if s == u'河南省':
+        return '6'
+    if s == u'安徽省':
+        return '7'
+    if s == u'福建省':
+        return '8'
+    else:
+        return '9'
+        
+train_master['UserInfo_19'] =train_master['UserInfo_19'].apply(lambda x:province_encode_(x))
+len(train_master['UserInfo_19'].unique())
+## 借款成交时间处理
+grouped_date_1 = train_master[train_master.target ==1.0]['target'].groupby(train_master['ListingInfo']).count()
+grouped_date_1.sort_values(ascending=False)
+grouped_date_0 = train_master[train_master.target ==0.0]['target'].groupby(train_master['ListingInfo']).count()
+grouped_date_0.sort_values(ascending=False)
+plt.figure()
+plt.title(u'date')
+grouped_date_1.plot(color='r')
+grouped_date_0.plot(color='b')
+plt.show()
+## 借款日期离散化
+# 把月、日、单独拎出来，放到3列中
+train_master['month'] = pd.DatetimeIndex(train_master.ListingInfo).month
+train_master['day']  = pd.DatetimeIndex(train_master.ListingInfo).day
+train_master['day'].head()
+train_master.drop(['ListingInfo'],axis=1,inplace=True)
+train_master['target'] = train_master['target'].astype(str)
+train_master.to_csv('Desktop/kaggle example/ppd_competition_data/first round train data/train_master.csv',index=False,encoding='utf-8')
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from collections import defaultdict
+import datetime as dt
+##  userupdateinfo表
+userupdate_info_number = defaultdict(list) ### 用户信息更新的次数
+userupdate_info_category = defaultdict(set) ###用户信息更新的种类数
+userupdate_info_times = defaultdict(list) ### 用户分几次更新了
+userupdate_info_date = defaultdict(list) #### 用户借款成交与信息更新时间跨度
+
+with open('Desktop/kaggle example/ppd_competition_data/first round train data/train_userupdateinfo.csv' ,'rb') as f:
+    f.readline().strip().split(",")
+    for line in f:
+        cols = line.strip().split(",") ### cols 是list结果
+        userupdate_info_date[cols[0]].append(cols[1])
+        
+        userupdate_info_number[cols[0]].append(cols[2])
+        userupdate_info_category[cols[0]].add(cols[2])
+        
+        userupdate_info_times[cols[0]].append(cols[3])
+    print(u'提取信息完成')
+
+userupdate_info_number_ = defaultdict(int) ### 用户信息更新的次数
+userupdate_info_category_ = defaultdict(int) ###用户信息更新的种类数
+userupdate_info_times_ = defaultdict(int) ### 用户分几次更新了
+userupdate_info_date_ = defaultdict(int) #### 用户借款成交与信息更新时间跨度
+
+for key in userupdate_info_date.keys():
+    userupdate_info_times_[key] = len(set(userupdate_info_times[key]))
+    delta_date = dt.datetime.strptime(userupdate_info_date[key][0] ,'%Y/%m/%d') - dt.datetime.strptime(list(set(userupdate_info_times[key]))[0] ,'%Y/%m/%d')
+    #if delta_date.days  >=0 :
+    userupdate_info_date_[key] = abs(delta_date.days)
+    #else:
+        #delta_date_ = dt.datetime.strptime(userupdate_info_date[key][0] ,'%Y/%m/%d') - dt.datetime.strptime(list(set(userupdate_info_times[key]))[0] ,'%Y/%m/%d')
+        #userupdate_info_date_[key] = abs(delta_date_.days)
+    
+    userupdate_info_number_[key] = len(userupdate_info_number[key])
+    userupdate_info_category_[key] = len(userupdate_info_category[key])
+
+print('信息处理完成')
+
+## 建立一个DataFrame
+Idx_ = userupdate_info_date_.keys() #### list
+numbers_ = userupdate_info_number_.values()
+categorys_ = userupdate_info_category_.values()
+times_ = userupdate_info_times_.values()
+dates_ = userupdate_info_date_.values()
+userupdate_df = pd.DataFrame({'Idx':Idx_ , 'numbers':numbers_ ,'categorys':categorys_ ,'times':times_ ,'dates':dates_ })
+userupdate_df.head()
+userupdate_df.to_csv('Desktop/kaggle example/ppd_competition_data/first round train data/userupdate_df.csv',index=False,encoding='utf-8')
+
+## LogInfo表处理
+train_loginfo = pd.read_csv('Desktop/kaggle example/ppd_competition_data/first round train data/PPD_LogInfo_3_1_Training_Set.csv',encoding='utf-8')
+train_loginfo.head()
+loginfo_number = defaultdict(list) ### 用户操作的次数
+loginfo_category = defaultdict(set) ###用户操作的种类数
+loginfo_times = defaultdict(list) ### 用户分登录次数
+loginfo_date = defaultdict(list) #### 用户借款成交与登录时间跨度
+
+with open('Desktop/kaggle example/ppd_competition_data/first round train data/PPD_LogInfo_3_1_Training_Set.csv' ,'rb') as f:
+    f.readline().strip().split(",")
+    for line in f:
+        cols = line.strip().split(",") ### cols 是list结果
+        loginfo_date[cols[0]].append(cols[1])
+        
+        loginfo_number[cols[0]].append(cols[2])
+        loginfo_category[cols[0]].add(cols[3])
+        
+        loginfo_times[cols[0]].append(cols[4])
+    print(u'提取信息完成')
+    
+loginfo_number_ = defaultdict(int)  ### 用户操作的次数
+loginfo_category_ = defaultdict(int) ###用户操作的种类数
+loginfo_times_ = defaultdict(int)  ### 用户分登录次数
+loginfo_date_ = defaultdict(int) #### 用户借款成交与登录时间跨度
+
+for key in loginfo_date.keys():
+    loginfo_times_[key] = len(loginfo_times[key])
+    loginfo_delta_date = dt.datetime.strptime(loginfo_date[key][0] ,'%Y-%m-%d') - dt.datetime.strptime(list(set(loginfo_times[key]))[0] ,'%Y-%m-%d')
+    #if delta_date.days  >=0 :
+    loginfo_date_[key] = abs(loginfo_delta_date.days)
+    #else:
+        #loginfo_delta_date_ = dt.datetime.strptime(loginfo_date[key][0] ,'%Y/%m/%d') - dt.datetime.strptime(list(set(loginfo_times[key]))[-1] ,'%Y/%m/%d')
+        #loginfo_date_[key] = abs(delta_date_.days)
+    
+    loginfo_number_[key] = len(loginfo_number[key])
+    loginfo_category_[key] = len(loginfo_category[key])
+
+print('信息处理完成')
+## 建立一个DataFrame
+log_Idx_ = loginfo_date_.keys() #### list
+log_numbers_ = loginfo_number_.values()
+log_categorys_ = loginfo_category_.values()
+log_times_ = loginfo_times_.values()
+log_dates_ = loginfo_date_.values()
+loginfo_df = pd.DataFrame({'Idx':log_Idx_ , 'log_numbers':log_numbers_ ,'log_categorys':log_categorys_ ,'log_times':log_times_ ,'log_dates':log_dates_ })
+loginfo_df.head()
+loginfo_df.to_csv('Desktop/kaggle example/ppd_competition_data/first round train data/loginfo_df.csv',index=False,encoding='utf-8')
+
+-----------------------------------------------------------------------
+import pandas as pd
+import numpy as np
+from sklearn import cross_validation , metrics
+from sklearn.grid_search import GridSearchCV
+import xgboost as xgb
+from xgboost.sklearn import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+import sklearn.preprocessing as preprocessing
+import matplotlib.pylab as plt
+import matplotlib.pylab as plt
+%matplotlib inline
+from matplotlib.pylab import rcParams
+rcParams['figure.figsize'] = 12, 4
+
+train_master = pd.read_csv('Desktop/kaggle example/ppd_competition_data/first round train data/train_master.csv',encoding='utf-8')
+train_userupdateinfo = pd.read_csv('Desktop/kaggle example/ppd_competition_data/first round train data/userupdate_df.csv',encoding='utf-8')
+train_loginfo = pd.read_csv('Desktop/kaggle example/ppd_competition_data/first round train data/loginfo_df.csv',encoding='utf-8')
+
+train_all = pd.merge(train_master, train_userupdateinfo, how='left', on='Idx')
+train_all = pd.merge(train_all, train_loginfo, how='left', on='Idx')
+train_all.isnull().sum().sort_values(ascending=False).head(10)
+## 填充缺失值
+for col in ['log_times','log_dates','log_categorys', 'log_numbers' ,'times',  'numbers','dates','categorys']:
+    mean_cols = train_all[col].mean()
+    train_all.loc[(train_all[col].isnull() , col)] = mean_cols
+    
+ ## 对数值型特征进行scaling
+ all_columns = train_all.columns
+categoric_cols = ['Idx','target','UserInfo_1' ,'UserInfo_2' ,'UserInfo_3' ,'UserInfo_4' , 'UserInfo_5' ,'UserInfo_6','UserInfo_7','UserInfo_8','UserInfo_9','UserInfo_11','UserInfo_12','UserInfo_13','UserInfo_14','UserInfo_15','UserInfo_16','UserInfo_17','UserInfo_19','UserInfo_20','UserInfo_21','UserInfo_22','UserInfo_23','UserInfo_24','Education_Info1','Education_Info2','Education_Info3','Education_Info4','Education_Info5','Education_Info6','Education_Info7','Education_Info8','WeblogInfo_19','WeblogInfo_20','WeblogInfo_21','SocialNetwork_1','SocialNetwork_2','SocialNetwork_7','SocialNetwork_12']
+numeric_cols = []
+for col in all_columns:
+    if col not in categoric_cols:
+        numeric_cols.append(col)
+ scaler = preprocessing.StandardScaler()
+for col in numeric_cols:
+    age_fit_param = scaler.fit(train_all[col])
+    train_all[col] = scaler.transform(train_all[col] , age_fit_param)
+
+train_all['WeblogInfo_2'].head()
+str_col = ['Idx','target','UserInfo_1' ,'UserInfo_2' ,'UserInfo_3' ,'UserInfo_4' , 'UserInfo_5' ,'UserInfo_6','UserInfo_7','UserInfo_8','UserInfo_9','UserInfo_11','UserInfo_12','UserInfo_13','UserInfo_14','UserInfo_15','UserInfo_16','UserInfo_17','UserInfo_19','UserInfo_20','UserInfo_21','UserInfo_22','UserInfo_23','UserInfo_24','Education_Info1','Education_Info2','Education_Info3','Education_Info4','Education_Info5','Education_Info6','Education_Info7','Education_Info8','WeblogInfo_19','WeblogInfo_20','WeblogInfo_21','SocialNetwork_1','SocialNetwork_2','SocialNetwork_7','SocialNetwork_12']
+del_col =[]
+for col in str_col:
+    if col not in list(all_columns):
+        del_col.append(col)
+del_col
+
+for col in list(all_columns):
+    if col in str_col:
+        try:
+            train_all[col] = train_all[col].astype(str)
+        except:
+            print('类型不可转换')
+    else:
+        train_all[col] = train_all[col].astype(np.float64)
+ 
+train_all['Idx'] = train_all['Idx'].astype(np.int64)
+train_all['target'] = train_all['target'].astype(np.int64)
+train_all = pd.get_dummies(train_all)
+train_all.head()
+train_all.to_csv('Desktop/kaggle example/ppd_competition_data/first round train data/train_all.csv',encoding='utf-8',index=False)
+y_train = train_all.pop('target')
+def modelfit(alg, dtrain,y_train, dtest=None ,useTrainCV=True, cv_folds=5, early_stopping_rounds=50):
+
+    if useTrainCV:
+        xgb_param = alg.get_xgb_params()
+        xgtrain = xgb.DMatrix(dtrain.as_matrix()[: ,1:], label=y_train)
+        #xgtest = xgb.DMatrix(dtest.as_matrix()[: , :])
+        cvresult = xgb.cv(xgb_param, xgtrain, num_boost_round=alg.get_params()['n_estimators'], nfold=cv_folds ,early_stopping_rounds=early_stopping_rounds)
+        alg.set_params(n_estimators=cvresult.shape[0])
+    
+    #建模
+    alg.fit(dtrain.as_matrix()[: ,1:], y_train ,eval_metric='auc')
+        
+    #对训练集预测
+    dtrain_predictions = alg.predict(dtrain.as_matrix()[: ,1:])
+    dtrain_predprob = alg.predict_proba(dtrain.as_matrix()[: ,1:])[:,1]
+        
+    #输出模型的一些结果
+    #print(dtrain_predictions)
+    #print(alg.predict_proba(dtrain.as_matrix()[: ,1:]))
+    print(cvresult.shape[0])
+    print "\n关于现在这个模型"
+    print "准确率 : %.4g" % metrics.accuracy_score(y_train, dtrain_predictions)
+    print "AUC 得分 (训练集): %f" % metrics.roc_auc_score(y_train, dtrain_predprob)
+    
+                
+    feat_imp = pd.Series(alg.booster().get_fscore()).sort_values(ascending=False)
+    print(feat_imp.hea
+          d(25))
+    print(feat_imp.shape)
+    feat_imp.plot(kind='bar', title='Feature Importances')
+    plt.ylabel('Feature Importance Score')
+    
+xgb1 = XGBClassifier(
+            learning_rate=0.1,
+            n_estimators =1000,
+            max_depth=5,
+            min_child_weight =1,
+            gamma = 0,
+            subsample=0.8,
+            colsample_bytree = 0.8,
+            objective ='binary:logistic' ,
+            nthread=4,
+            scale_pos_weight=1,
+            seed = 27
+            )
+
+modelfit(xgb1 ,train_all  ,y_train)
+rf0 = RandomForestClassifier(oob_score=True , random_state =10)
+rf0.fit(train_all.as_matrix()[:,1:] ,y_train)
+print(rf0.oob_score_)
+y_predprob = rf0.predict_proba(train_all.as_matrix()[:,1:])[:,1]
+print('AUC Score(Train): %f'%metrics.roc_auc_score(y_train , y_predprob))
+
+lr = LogisticRegression(tol=1e-6)
+parameters = {'penalty':('l1' , 'l2') , 'C':[0.4,0.45,0.5,0.55,0.6]}
+clf_lr = GridSearchCV(lr ,parameters )
+print('开始训练')
+clf_lr.fit(train_all.as_matrix()[:,1:] ,y_train)
+print('模型训练结束')
+clf_lr
+
+clf_lr_accuracy = clf_lr.score(train_all.as_matrix()[:,1:] ,y_train)
+print(clf_lr_accuracy)
+clf_lr.grid_scores_ , clf_lr.best_params_ ,clf_lr.best_score_
+
+
+
+
+
+
